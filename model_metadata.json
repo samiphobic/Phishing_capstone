@@ -1,0 +1,35 @@
+{
+  "accuracy": 99.2,
+  "f1_score": 99.2,
+  "n_estimators_used": 499,
+  "max_depth": 6,
+  "features": [
+    "url_length",
+    "num_dots",
+    "num_hyphens",
+    "num_slash",
+    "num_digits",
+    "has_https",
+    "has_at_symbol",
+    "num_keywords",
+    "has_ip",
+    "entropy",
+    "num_subdomains",
+    "tld_suspicious",
+    "has_encoded_chars",
+    "has_port",
+    "path_length",
+    "query_length",
+    "num_query_params",
+    "is_ip_domain",
+    "digit_ratio",
+    "special_char_count"
+  ],
+  "top_features": [
+    "has_https",
+    "is_ip_domain",
+    "num_subdomains",
+    "has_ip",
+    "num_keywords"
+  ]
+}
