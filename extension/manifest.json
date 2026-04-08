@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "PhishGuard",
+  "version": "1.0",
+  "description": "Scan any URL for phishing risk using the PhishGuard ML model.",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "PhishGuard",
+    "default_icon": {
+      "16": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://phishguard-qcxq.onrender.com/*"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "phishguard@shepherd.edu",
+      "strict_min_version": "109.0"
+    }
+  }
+}

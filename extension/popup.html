@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishGuard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    width: 320px;
+    background: #0a0c0f;
+    color: #dde3ed;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+  }
+
+  nav {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4f8ef7;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #dde3ed;
+    letter-spacing: -.01em;
+  }
+
+  .nav-tag {
+    margin-left: auto;
+    font-size: 10px;
+    color: #4e5666;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .main {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .input-wrap {
+    background: #111418;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 3px 3px 12px;
+    transition: border-color .15s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: rgba(79,142,247,.4);
+  }
+
+  .input-wrap input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #dde3ed;
+    caret-color: #4f8ef7;
+    padding: 8px 0;
+    min-width: 0;
+  }
+
+  .input-wrap input::placeholder { color: #4e5666; }
+
+  .scan-btn {
+    background: #4f8ef7;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity .15s;
+    flex-shrink: 0;
+  }
+
+  .scan-btn:hover:not(:disabled) { opacity: .85; }
+  .scan-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  #errMsg {
+    font-size: 11px;
+    color: #f87171;
+    min-height: 14px;
+    text-align: center;
+  }
+
+  .result-card {
+    display: none;
+    background: #111418;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .score-row {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .score-num {
+    font-size: 42px;
+    font-weight: 300;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: -.04em;
+    line-height: 1;
+    color: #34d399;
+    transition: color .4s;
+    min-width: 80px;
+  }
+
+  .score-right {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .score-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #dde3ed;
+  }
+
+  .score-sub {
+    font-size: 11px;
+    color: #7c8699;
+    line-height: 1.5;
+    max-width: 180px;
+  }
+
+  .feat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .feat-cell {
+    background: #111418;
+    padding: 10px 12px;
+  }
+
+  .feat-cell.warn { background: rgba(248,113,113,.06); }
+  .feat-cell.ok   { background: rgba(52,211,153,.04); }
+
+  .feat-key {
+    font-size: 9px;
+    font-weight: 600;
+    color: #4e5666;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 3px;
+  }
+
+  .feat-val {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: #7c8699;
+  }
+
+  .feat-cell.warn .feat-val { color: #f87171; }
+  .feat-cell.ok  .feat-val { color: #34d399; }
+
+  .current-url {
+    font-size: 10px;
+    color: #4e5666;
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+    padding: 0 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  footer {
+    padding: 10px 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 10px;
+    color: #4e5666;
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo-dot"></div>
+  <span class="logo-text">PhishGuard</span>
+  <span class="nav-tag">v1.0</span>
+</nav>
+
+<div class="main">
+
+  <div class="input-wrap">
+    <input
+      type="text"
+      id="urlInput"
+      placeholder="https://example.com"
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button class="scan-btn" id="scanBtn">Scan</button>
+  </div>
+
+  <div class="current-url" id="currentUrl"></div>
+  <div id="errMsg"></div>
+
+  <div class="result-card" id="resultCard">
+    <div class="score-row">
+      <div class="score-num" id="scoreNum">0/10</div>
+      <div class="score-right">
+        <div class="score-label" id="scoreLabel"></div>
+        <div class="score-sub" id="scoreSub"></div>
+      </div>
+    </div>
+    <div class="feat-grid" id="featGrid"></div>
+  </div>
+
+</div>
+
+<footer>phishguard-qcxq.onrender.com</footer>
+
+<script src="popup.js"></script>
+</body>
+</html>
