@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishGuard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #0a0c0f;
+  --surface: #111418;
+  --surface2:#181c22;
+  --line:    rgba(255,255,255,0.06);
+  --line2:   rgba(255,255,255,0.1);
+  --text:    #dde3ed;
+  --dim:     #4e5666;
+  --dim2:    #7c8699;
+  --blue:    #4f8ef7;
+  --green:   #34d399;
+  --amber:   #fbbf24;
+  --red:     #f87171;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+/* ── NAV ─────────────── */
+nav {
+  padding: 22px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -.01em;
+}
+
+.logo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+.nav-tag {
+  font-size: 11px;
+  color: var(--dim2);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── MAIN ────────────── */
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  gap: 48px;
+}
+
+/* ── INPUT SECTION ───── */
+.input-section {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+page-title {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -.02em;
+  text-align: center;
+}
+
+.page-title span {
+  color: var(--dim2);
+  font-weight: 300;
+}
+
+.input-wrap {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 16px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.input-wrap:focus-within {
+  border-color: rgba(79,142,247,.35);
+  box-shadow: 0 0 0 3px rgba(79,142,247,.07);
+}
+
+.input-wrap input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  caret-color: var(--blue);
+  padding: 10px 0;
+}
+
+.input-wrap input::placeholder { color: var(--dim); }
+
+.go-btn {
+  background: var(--blue);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+  white-space: nowrap;
+}
+
+.clear.btn{
+  background: var(--red);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s;
+  white-space: nowrap;
+}
+
+
+
+.go-btn:hover:not(:disabled) { opacity: .85; }
+.go-btn:active:not(:disabled) { transform: scale(.97); }
+.go-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+#errMsg {
+  font-size: 12px;
+  color: var(--red);
+  text-align: center;
+  min-height: 16px;
+}
+
+/* ── RESULT SECTION ───── */
+#result {
+  display: none;
+  width: 100%;
+  max-width: 560px;
+  flex-direction: column;
+  gap: 12px;
+  animation: up .35s ease both;
+}
+
+@keyframes up {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Score row */
+.score-row {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.score-num {
+  font-size: 64px;
+  font-weight: 300;
+  letter-spacing: -.05em;
+  line-height: 1;
+  color: var(--green);
+  transition: color .4s;
+  min-width: 110px;
+  font-variant-numeric: tabular-nums;
+  font-family: 'DM Mono', monospace;
+}
+
+.score-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.score-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -.01em;
+}
+
+.score-sub {
+  font-size: 13px;
+  color: var(--dim2);
+  line-height: 1.55;
+  font-weight: 400;
+  max-width: 300px;
+}
+
+/* Feature grid */
+.feat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.feat-cell {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.feat-cell.warn {
+  border-color: rgba(248,113,113,.2);
+  background: rgba(248,113,113,.04);
+}
+
+.feat-cell.ok {
+  border-color: rgba(52,211,153,.12);
+}
+
+.feat-key {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 4px;
+}
+
+.feat-val {
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  color: var(--dim2);
+}
+
+.feat-cell.warn .feat-val { color: var(--red); }
+.feat-cell.ok  .feat-val { color: var(--green); }
+
+/* ── FOOTER ──────────── */
+footer {
+  padding: 18px 40px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--dim);
+  font-family: 'DM Mono', monospace;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 500px) {
+  nav { padding: 18px 20px; }
+  .score-num { font-size: 48px; min-width: 90px; }
+  .feat-grid { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 4px; text-align: center; }
+}
+
+.info-icon {
+  background: var(--dim2);
+  color: white;
+  border: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: 6px;
+  opacity: 0.8;
+  transition: opacity .15s;
+}
+
+.info-icon:hover {
+  opacity: 1;
+}
+
+.info-panel {
+  display: none;
+  background: var(--surface2);
+  border-left: 3px solid var(--blue);
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 8px;
+  animation: up .3s ease both;
+}
+
+.info-panel h3 {
+  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.info-panel p {
+  font-size: 13px;
+  color: var(--dim2);
+  line-height: 1.55;
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    PhishGuard
+  </div>
+  <span class="nav-tag">XGBoost · v1.0</span>
+</nav>
+
+<main>
+  <div class="input-section">
+    <div class="page-title">URL Risk Scanner <span>: enter any link here</span></div>
+
+    <div class="input-wrap">
+      <input
+        id="urlInput"
+        type="text"
+        placeholder="https://example.com"
+        autocomplete="off"
+        spellcheck="false"
+        onkeydown="if(event.key==='Enter') run()"
+      >
+      <button class="go-btn" id="goBtn" onclick="run()">Scan</button>
+      
+      <div>
+      <button class="clear btn" id="clearBtn" onclick="document.getElementById('urlInput').value=''; document.getElementById('result').style.display='none'; document.getElementById('errMsg').textContent='';">Clear</button>
+    </div>
+
+    <div id="errMsg"></div>
+  </div>
+
+  <div id="result">
+    <div id="infoPanel" class="info-panel">
+    <h3 id="infoTitle"></h3>
+    <p id="infoText"></p>
+    </div>
+    <div class="score-row">
+      <div class="score-num" id="scoreNum">0/10</div>
+      <div class="score-right">
+        <div class="score-label" id="scoreLabel">—</div>
+        <div class="score-sub"  id="scoreSub">—</div>
+      </div>
+    </div>
+    <div class="feat-grid" id="featGrid"></div>
+  </div>
+</main>
+
+<footer>
+  <span>Phishing URL Risk Score Predictor — Capstone 2025</span>
+  <span>20 features · 632K+ URLs trained</span>
+</footer>
+
+<script>
+async function run() {
+  const url = document.getElementById('urlInput').value.trim();
+  const err = document.getElementById('errMsg');
+  const btn = document.getElementById('goBtn');
+  const res = document.getElementById('result');
+
+  err.textContent = '';
+  if (!url) { err.textContent = 'Enter a URL first.'; return; }
+
+  btn.textContent  = '...';
+  btn.disabled     = true;
+  res.style.display = 'none';
+
+  try {
+    const r    = await fetch('/analyze', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ url }),
+    });
+    const data = await r.json();
+    if (data.error) { err.textContent = data.error; return; }
+    render(data);
+  } catch {
+    err.textContent = 'Server unreachable — is app.py running?';
+  } finally {
+    btn.textContent = 'Scan';
+    btn.disabled    = false;
+  }
+}
+
+function render(data) {
+  const score = data.risk_score;
+  const res   = document.getElementById('result');
+
+  const color = score >= 7 ? 'var(--red)'
+              : score >= 4 ? 'var(--amber)'
+              : 'var(--green)';
+
+  const numEl = document.getElementById('scoreNum');
+  numEl.textContent = score + '/10';
+  numEl.style.color = color;
+
+  document.getElementById('scoreLabel').textContent = data.risk_level || '—';
+  document.getElementById('scoreSub').textContent   = data.explanation || '';
+
+  const grid    = document.getElementById('featGrid');
+  const entries = Object.entries(data.feature_analysis || {});
+  grid.innerHTML = entries.map(([k, v]) => `
+  <div class="feat-cell ${v.warning ? 'warn' : 'ok'}">
+    <div class="feat-key">
+      ${k}
+      <button class="info-icon" data-info="${k}">i</button>
+    </div>
+    <div class="feat-val">${v.value}</div>
+  </div>
+`).join('');
+
+  res.style.display = 'flex';
+
+  // --- INFO PANEL DATA ---
+const infoData = {
+  "URL length": "How long the URL is. Long URLs often hide malicious parameters or redirect chains.",
+  "Encryption": "HTTPS indicates encryption which protects your information. However, attackers can still get certificates, so it's not a guarantee of safety.",
+  "TLD": "The ending of the URL like .com or .org. Uncommon TLDs can be a red flag as they are abused more frequently.",
+  "Subdomains": "Many subdomains can indicate deceptive URL structures.",
+  "Entropy": "High entropy suggests randomness, often used to evade detection.",
+  "@ symbol": "Presence of '@' can hide the real domain.", 
+  "Keywords": "Suspicious words like 'login', 'secure', 'update' in the URL can indicate phishing.", 
+  "Domain type":"The category the TLD belongs to, some types are more commonly used for phishing than others.",
+
+
+};
+
+// --- INFO ICON CLICK HANDLER ---
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("info-icon")) {
+    const key = e.target.dataset.info;
+    document.getElementById("infoTitle").textContent = key;
+    document.getElementById("infoText").textContent = infoData[key] || "No info available.";
+    document.getElementById("infoPanel").style.display = "block";
+  }
+});
+
+}
+</script>
+</body>
+</html>
