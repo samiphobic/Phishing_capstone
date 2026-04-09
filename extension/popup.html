@@ -101,6 +101,29 @@
   .scan-btn:hover:not(:disabled) { opacity: .85; }
   .scan-btn:disabled { opacity: .4; cursor: not-allowed; }
 
+  .clear-btn {
+  background: #f87171;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity .15s;
+  flex-shrink: 0;
+}
+
+.clear-btn:hover {
+  opacity: .85;
+}
+
+.clear-btn:active {
+  transform: scale(.97);
+}
+
+
   #errMsg {
     font-size: 11px;
     color: #f87171;
@@ -154,6 +177,32 @@
     max-width: 180px;
   }
 
+  .info-icon {
+  background:  #7c8699;
+  color: white;
+  border: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: 6px;
+  opacity: 0.8;
+}
+
+.info-icon:hover {
+  opacity: 1;
+}
+
+.info-panel {
+  display: none;
+  background: #181c22;
+  border-left: 3px solid #4f8ef7;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 6px;
+}
+
   .feat-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -176,6 +225,8 @@
     text-transform: uppercase;
     letter-spacing: .07em;
     margin-bottom: 3px;
+    position: relative;
+    z-index: 2;
   }
 
   .feat-val {
@@ -228,12 +279,18 @@
       spellcheck="false"
     >
     <button class="scan-btn" id="scanBtn">Scan</button>
+    <button id="clearBtn" class="clear-btn">Clear</button>
+
   </div>
 
   <div class="current-url" id="currentUrl"></div>
   <div id="errMsg"></div>
 
   <div class="result-card" id="resultCard">
+    <div id="infoPanel" class="info-panel">
+    <h3 id="infoTitle"></h3>
+    <p id="infoText"></p>
+  </div>
     <div class="score-row">
       <div class="score-num" id="scoreNum">0/10</div>
       <div class="score-right">

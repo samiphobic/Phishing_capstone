@@ -80,10 +80,14 @@ function render(data) {
 
   grid.innerHTML = entries.map(([k, v]) => `
     <div class="feat-cell ${v.warning ? 'warn' : 'ok'}">
-      <div class="feat-key">${k}</div>
+      <div class="feat-key">
+        ${k}
+        <button class="info-icon" data-info="${k}">i</button>
+      </div>
       <div class="feat-val">${v.value}</div>
     </div>
   `).join('');
+
 
   resultCard.style.display = 'block';
 }
@@ -112,3 +116,31 @@ async function init() {
 }
 
 init();
+
+const infoData = {
+   "URL length": "How long the URL is. Long URLs often hide malicious parameters or redirect chains.",
+  "Encryption": "HTTPS indicates encryption which protects your information. However, attackers can still get certificates, so it's not a guarantee of safety.",
+  "TLD": "The ending of the URL like .com or .org. Uncommon TLDs can be a red flag as they are abused more frequently.",
+  "Subdomains": "Many subdomains can indicate deceptive URL structures.",
+  "Entropy": "High entropy suggests randomness, often used to evade detection.",
+  "@ symbol": "Presence of '@' can hide the real domain.", 
+  "Keywords": "Suspicious words like 'login', 'secure', 'update' in the URL can indicate phishing.", 
+  "Domain type":"The category the TLD belongs to, some types are more commonly used for phishing than others."
+};
+
+
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("info-icon")) {
+    const key = e.target.dataset.info;
+    document.getElementById("infoTitle").textContent = key;
+    document.getElementById("infoText").textContent = infoData[key] || "No info available.";
+    document.getElementById("infoPanel").style.display = "block";
+  }
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  urlInput.value = "";
+  errMsg.textContent = "";
+  resultCard.style.display = "none";
+  document.getElementById("infoPanel").style.display = "none";
+});
